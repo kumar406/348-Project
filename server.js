@@ -36,7 +36,7 @@ db.serialize(() => {
     console.log('Database "Users" ready to go!');
     db.each("SELECT * from Users", (err, row) => {
       if (row) {
-        console.log(`record: ${row.dream}`);
+        console.log(`record: ${row.username}`);
       }
     });
   }
@@ -47,22 +47,21 @@ app.get("/", (request, response) => {
   response.sendFile(`${__dirname}/views/index.html`);
 });
 
-// endpoint to get all the dreams in the database
+// endpoint to get all the user in the database
 app.get("/getUsers", (request, response) => {
   db.all("SELECT * from Users", (err, rows) => {
     response.send(JSON.stringify(rows));
   });
 });
 
-// endpoint to add a dream to the database
+// endpoint to add a user to the database
 app.post("/addUser", (request, response) => {
-  console.log(`add to users ${request.body.dream}`);
-
+  console.log(`add to users table ${request.body.user}`);
   // DISALLOW_WRITE is an ENV variable that gets reset for new projects
   // so they can write to the database
   if (!process.env.DISALLOW_WRITE) {
-    const cleansedDream = cleanseString(request.body.dream);
-    db.run(`INSERT INTO USers (username) VALUES (?)`, cleansedDream, error => {
+    const cleansedUser = cleanseString(request.body.user);
+    db.run(`INSERT INTO Users (username) VALUES (?)`, cleansedUser, error => {
       if (error) {
         response.send({ message: "error!" });
       } else {
@@ -73,7 +72,7 @@ app.post("/addUser", (request, response) => {
 });
 
 // endpoint to clear dreams from the database
-app.get("/clearDreams", (request, response) => {
+app.get("/clearUsers", (request, response) => {
   // DISALLOW_WRITE is an ENV variable that gets reset for new projects so you can write to the database
   if (!process.env.DISALLOW_WRITE) {
     db.each(
