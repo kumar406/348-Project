@@ -29,16 +29,33 @@
       <p>Enter a new user for the service: </p>
       
       <form>
-        <input name="user" aria-label="a new user" type="text" maxlength="100" placeholder="New User Here!">
+        <input name="first" type="text" maxlength="100" placeholder="First Name">
+        <input name="last" type="text" maxlength="100" placeholder="Last Name">
+        <label>
+          Account Type:
+        </label>
+        <select name="act">
+          <option value="0">
+            Standard
+          </option>
+          <option value="1">
+            Premium
+          </option>
+        </select>
         <button type="submit" id="submit-user">Add User</button>
       </form>
       
-      <section class="users">
-        <ul id="users"></ul>
-        <button id="clear-users">
-          Clear Users
-        </button>
-      </section>
+      <table>
+        <thead>
+          <tr><th>First Name</th>
+              <th>Last Name</th>
+              <th>Date Joined</th>
+              <th>Account Type</th>
+          </tr>
+        </thead>
+        <tbody id="user_table">
+        </tbody>
+      </table>
       
     </main>
   </body>
