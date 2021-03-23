@@ -1,35 +1,52 @@
 // client-side js
 // run by the browser each time your view template referencing it is loaded
 
-const users = [];
+const user = [];
 
 // define variables that reference elements on our page
 const usersForm = document.forms[0];
-const userInput = usersForm.elements["user"];
+const firstInput = usersForm.elements["first"];
+const lastInput = usersForm.elements["last"];
+const actInput = usersForm.elements["act"];
 const usersList = document.getElementById("users");
 const clearButton = document.querySelector('#clear-users');
 
-// request the dreams from our app's sqlite database
+// request the users from our app's sqlite database
 fetch("/getUsers", {})
   .then(res => res.json())
   .then(response => {
     response.forEach(row => {
-      appendNewUser(row.username);
+      appendNewUser({first:row.firstname, last:row.lastname, date:row.datejoined, act:row.accounttype});
     });
   });
 
 // a helper function that creates a list item for a given dream
 const appendNewUser = user => {
-  const newListItem = document.createElement("li");
-  newListItem.innerText = user;
-  usersList.appendChild(newListItem);
+  const newTrItem = document.createElement("tr");
+  const firstTdItem = document.createElement("td");
+  firstTdItem.innerHTML = user.first;
+  const lastTdItem = document.createElement("td");
+  lastTdItem.innerHTML = user.last;
+  const dateTdItem = document.createElement("td");
+  dateTdItem.innerHTML = user.date;
+  const actTdItem = document.createElement("td");
+  actTdItem.innerHTML = user.act;
+  
+  newTrItem.appendChild(firstTdItem);
+  newTrItem.appendChild(lastTdItem);
+  newTrItem.appendChild(dateTdItem);
+  newTrItem.appendChild(actTdItem);
+  
+  const tbItem = document.getElementById("user_table")
+  tbItem.appendChild(newTrItem);
 };
 
 // listen for the form to be submitted and add a new dream when it is
 usersForm.onsubmit = event => {
   // stop our form submission from refreshing the page
   event.preventDefault();
-  const data = { user: userInput.value };
+  const date = new Date().toLocaleDateString();
+  const data = { first: firstInput.value, last: lastInput.value, date: date, act: actInput.value };
 
   fetch("/addUser", {
     method: "POST",
@@ -40,20 +57,12 @@ usersForm.onsubmit = event => {
     .then(response => {
       console.log(JSON.stringify(response));
     });
-  // get user value and add it to the list
-  users.push(userInput.value);
-  appendNewUser(userInput.value);
+  
+  appendNewUser(data);
 
   // reset form
-  userInput.value = "";
-  userInput.focus();
+  firstInput.value = "";
+  firstInput.focus();
+  lastInput.value = "";
+  actInput.value = 0;
 };
-
-clearButton.addEventListener('click', event => {
-  fetch("/clearUsers", {})
-    .then(res => res.json())
-    .then(response => {
-      console.log("cleared users");
-    });
-  usersList.innerHTML = "";
-});

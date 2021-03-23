@@ -22,16 +22,20 @@ const db = new sqlite3.Database(dbFile);
 db.serialize(() => {
   if (!exists) {
     db.run(
-      "CREATE TABLE Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT)"
+      "CREATE TABLE Accounts(id INTEGER PRIMARY KEY, description TEXT)"
     );
-    console.log("New table Users created!");
+    db.run(
+      "INSERT INTO Accounts VALUES (0, 'Standard')"
+    );
+    db.run(
+      "INSERT INTO Accounts VALUES (1, 'Premium')"
+    );
+    db.run(
+      "CREATE TABLE Users (id INTEGER PRIMARY KEY AUTOINCREMENT, firstname TEXT, lastname TEXT, datejoined TEXT, accounttype int(11))"
+    );
+    console.log("New table Users created");
+    console.log("New table Accounts created");
 
-    // insert default users
-    db.serialize(() => {
-      db.run(
-        'INSERT INTO Users (username) VALUES ("Shashank"), ("Bob"), ("Joe")'
-      );
-    });
   } else {
     console.log('Database "Users" ready to go!');
     db.each("SELECT * from Users", (err, row) => {
@@ -60,39 +64,17 @@ app.post("/addUser", (request, response) => {
   // DISALLOW_WRITE is an ENV variable that gets reset for new projects
   // so they can write to the database
   if (!process.env.DISALLOW_WRITE) {
-    const cleansedUser = cleanseString(request.body.user);
-    db.run(`INSERT INTO Users (username) VALUES (?)`, cleansedUser, error => {
+    const cleansedfirst = cleanseString(request.body.first);
+    const cleansedlast = cleanseString(request.body.last);
+    const cleanseddate = cleanseString(request.body.date)
+    const cleansedact = cleanseString(request.body.act);
+    db.run(`INSERT INTO Users (firstname, lastname, datejoined, accounttype) VALUES (?,?,?,?)`, cleansedfirst, cleansedlast, cleanseddate, cleansedact, error => {
       if (error) {
         response.send({ message: "error!" });
       } else {
         response.send({ message: "success" });
       }
     });
-  }
-});
-
-// endpoint to clear dreams from the database
-app.get("/clearUsers", (request, response) => {
-  // DISALLOW_WRITE is an ENV variable that gets reset for new projects so you can write to the database
-  if (!process.env.DISALLOW_WRITE) {
-    db.each(
-      "SELECT * from Users",
-      (err, row) => {
-        console.log("row", row);
-        db.run(`DELETE FROM Users WHERE ID=?`, row.id, error => {
-          if (row) {
-            console.log(`deleted row ${row.id}`);
-          }
-        });
-      },
-      err => {
-        if (err) {
-          response.send({ message: "error!" });
-        } else {
-          response.send({ message: "success" });
-        }
-      }
-    );
   }
 });
 
