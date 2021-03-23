@@ -1,5 +1,4 @@
 // server.js
-// where your node app starts
 
 // init project
 const express = require("express");
@@ -83,7 +82,7 @@ const cleanseString = function(string) {
   return string.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 };
 
-// listen for requests :)
+// listen for requests
 var listener = app.listen(process.env.PORT, () => {
   console.log(`Your app is listening on port ${listener.address().port}`);
 });
