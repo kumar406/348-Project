@@ -45,20 +45,15 @@ db.serialize(() => {
     INSERT INTO Artists VALUES (9, 'Coldplay', 'Pop');
     
     CREATE TABLE Song(id INTEGER PRIMARY KEY, title TEXT, length TEXT, genre TEXT);
-    INSERT INTO Song(1, 'Ivy', 'R&B');
-    INSERT INTO Song(1, 'Say So', 'Pop');
-    INSERT INTO Song(1, 'Dangerous Woman', 'Pop');
-    INSERT INTO Song(1, 'You Da One', 'Pop');
-    INSERT INTO Song(1, 'Ivy', 'R&B');
-    */
-    //Add these tables in manually & populate with data
-    /*
-    db.run(
-      "CREATE TABLE Artist (id INTEGER PRIMARY KEY id, firstname TEXT, lastname TEXT, datejoined TEXT, genre TEXT)"
-    );
-    db.run(
-      "CREATE TABLE Song (id INTEGER PRIMARY KEY id, length int(11), genre TEXT)"
-    );
+    INSERT INTO  Song VALUES(1, 'Ivy', '4:09', 'R&B');
+    INSERT INTO  Song VALUES(2, 'Say So', '3:57', 'Pop');
+    INSERT INTO  Song VALUES(3, 'Dangerous Woman','3:55','Pop');
+    INSERT INTO  Song VALUES(4, 'You Da One', '3:20','Pop');
+    INSERT INTO  Song VALUES(5, 'Stronger', '5:11','Hip hop');
+    INSERT INTO  Song VALUES(6, 'Love Yourz', '3:31','Hip hop');
+    INSERT INTO  Song VALUES(7, 'Fly Me To the Moon', '2:27','Jazz');
+    INSERT INTO  Song VALUES(8, 'American Idiot', '2:56','Rock');
+    INSERT INTO  Song VALUES(9, 'Yellow', '4:26','Pop');
     */
     console.log("New table Users created");
     console.log("New table Accounts created");
@@ -88,8 +83,6 @@ app.get("/getUsers", (request, response) => {
 // endpoint to add a user to the database
 app.post("/addUser", (request, response) => {
   console.log(`add to users table ${request.body.user}`);
-  // DISALLOW_WRITE is an ENV variable that gets reset for new projects
-  // so they can write to the database
   if (!process.env.DISALLOW_WRITE) {
     const cleansedfirst = cleanseString(request.body.first);
     const cleansedlast = cleanseString(request.body.last);
@@ -115,9 +108,18 @@ app.post("/getPlaylistByName", (request, response) => {
   });
 });
 
+//search artists
+app.post("/getArtistByGenre", (request, response) => {
+  console.log("Here is the name " + request.body.getArtistByGenre);
+  const cleansedgenre = cleanseString(request.body.getArtistByGenre);
+  db.all(`SELECT * from Artists WHERE genre='${cleansedgenre}'`, (err, rows) => {
+    response.send(JSON.stringify(rows));
+    console.log(rows);
+  })
+});
+
 // helper function that prevents html/css/script malice
 const cleanseString = function(string) {
-  
   return string.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 };
 

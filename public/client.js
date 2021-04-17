@@ -1,7 +1,5 @@
 // client-side js
 
-const user = [];
-
 //User List Form
 const usersForm = document.forms[0];
 const firstInput = usersForm.elements["first"];
@@ -12,13 +10,12 @@ const usersList = document.getElementById("users");
 //Search for playlist-by-genre Form
 const playlistForm = document.forms[1];
 const pnameInput = playlistForm.elements["playlistbyname"];
-
 const tbPlaylistSearchItem = document.getElementById("playlist_name")
-
 
 //Search for artist-by-genre Form
 const artistForm = document.forms[2];
 const genreInput = artistForm.elements["artistbygenre"];
+const tbArtistSearchItem = document.getElementById("artist_genre");
 
 // request the users from the app's sqlite database
 fetch("/getUsers", {})
@@ -61,6 +58,19 @@ const createPlaylistTable = playlist => {
   newTrItem.appendChild(dateTdItem);
   
   tbPlaylistSearchItem.appendChild(newTrItem);
+};
+
+const createArtistTable = artist => {
+  const newTrItem = document.createElement("tr");
+  const nameTdItem = document.createElement("td");
+  nameTdItem.innerHTML = artist.name;
+  const genreTdItem = document.createElement("td");
+  genreTdItem.innerHTML = artist.genre;
+  
+  newTrItem.appendChild(nameTdItem);
+  newTrItem.appendChild(genreTdItem);
+  
+  tbArtistSearchItem.appendChild(newTrItem);
 }
 
 // listen for userForm to be submitted and add a new user when it is
@@ -89,13 +99,13 @@ usersForm.onsubmit = event => {
   actInput.value = 0;
 };
 
+//Submission for search for playlists
 playlistForm.onsubmit = event => {
   event.preventDefault();
   //Remove previous entries
   while (tbPlaylistSearchItem.firstChild) {
         tbPlaylistSearchItem.removeChild(tbPlaylistSearchItem.firstChild);
   }
-  
   console.log("Here is the name " + pnameInput.value);
   fetch("/getPlaylistByName", {
     method: "POST",
@@ -110,7 +120,23 @@ playlistForm.onsubmit = event => {
   });
 };
 
+//Submission for search for artists
 artistForm.onsubmit = event => {
   event.preventDefault();
-  
-}
+  //Remove previous entries
+  while (tbArtistSearchItem.firstChild) {
+    tbArtistSearchItem.removeChild(tbArtistSearchItem.firstChild);
+  } 
+  console.log("Here is the genre " + genreInput.value);
+  fetch("/getArtistByGenre", {
+    method: "POST",
+    body: JSON.stringify({getArtistByGenre:genreInput.value}),
+    headers: { "Content-Type": "application/json"}
+  })
+  .then(res => res.json())
+  .then(response => {
+    response.forEach(row => {
+      createArtistTable(row);
+    });
+  });
+};
