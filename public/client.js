@@ -2,13 +2,23 @@
 
 const user = [];
 
-// define variables that reference elements on the page
+//User List Form
 const usersForm = document.forms[0];
 const firstInput = usersForm.elements["first"];
 const lastInput = usersForm.elements["last"];
 const actInput = usersForm.elements["act"];
 const usersList = document.getElementById("users");
-const clearButton = document.querySelector('#clear-users');
+
+//Search for playlist-by-genre Form
+const playlistForm = document.forms[1];
+const pnameInput = playlistForm.elements["playlistbyname"];
+
+const tbPlaylistSearchItem = document.getElementById("playlist_name")
+
+
+//Search for artist-by-genre Form
+const artistForm = document.forms[2];
+const genreInput = artistForm.elements["artistbygenre"];
 
 // request the users from the app's sqlite database
 fetch("/getUsers", {})
@@ -40,7 +50,20 @@ const appendNewUser = user => {
   tbItem.appendChild(newTrItem);
 };
 
-// listen for the form to be submitted and add a new user when it is
+const createPlaylistTable = playlist => {
+  const newTrItem = document.createElement("tr");
+  const nameTdItem = document.createElement("td");
+  nameTdItem.innerHTML = playlist.name;
+  const dateTdItem = document.createElement("td");
+  dateTdItem.innerHTML = playlist.datecreated;
+  
+  newTrItem.appendChild(nameTdItem);
+  newTrItem.appendChild(dateTdItem);
+  
+  tbPlaylistSearchItem.appendChild(newTrItem);
+}
+
+// listen for userForm to be submitted and add a new user when it is
 usersForm.onsubmit = event => {
   // stop our form submission from refreshing the page
   event.preventDefault();
@@ -65,3 +88,29 @@ usersForm.onsubmit = event => {
   lastInput.value = "";
   actInput.value = 0;
 };
+
+playlistForm.onsubmit = event => {
+  event.preventDefault();
+  //Remove previous entries
+  while (tbPlaylistSearchItem.firstChild) {
+        tbPlaylistSearchItem.removeChild(tbPlaylistSearchItem.firstChild);
+  }
+  
+  console.log("Here is the name " + pnameInput.value);
+  fetch("/getPlaylistByName", {
+    method: "POST",
+    body: JSON.stringify({getPlaylistByName:pnameInput.value}),
+    headers: { "Content-Type": "application/json"}
+  })
+  .then(res => res.json())
+  .then(response => {
+    response.forEach(row => {
+      createPlaylistTable(row);
+    });
+  });
+};
+
+artistForm.onsubmit = event => {
+  event.preventDefault();
+  
+}
