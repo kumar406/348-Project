@@ -1,5 +1,4 @@
 // server.js
-// where your node app starts
 
 // init project
 const express = require("express");
@@ -33,6 +32,34 @@ db.serialize(() => {
     db.run(
       "CREATE TABLE Users (id INTEGER PRIMARY KEY AUTOINCREMENT, firstname TEXT, lastname TEXT, datejoined TEXT, accounttype int(11))"
     );
+    /*
+    CREATE TABLE Artists(id INTEGER PRIMARY KEY, name TEXT, genre TEXT);
+    INSERT INTO Artists VALUES (1, 'Frank Ocean', 'R&B');
+    INSERT INTO Artists VALUES (2, 'Doja Cat', 'Pop');
+    INSERT INTO Artists VALUES (3, 'Ariana Grande', 'Pop');
+    INSERT INTO Artists VALUES (4, 'Rihanna', 'Pop');
+    INSERT INTO Artists VALUES (5, 'Kanye West', 'Hip hop');
+    INSERT INTO Artists VALUES (6, 'J. Cole', 'Hip Hop');
+    INSERT INTO Artists VALUES (7, 'Frank Sinatra', 'Jazz');
+    INSERT INTO Artists VALUES (8, 'Green Day', 'Rock');
+    INSERT INTO Artists VALUES (9, 'Coldplay', 'Pop');
+    
+    CREATE TABLE Song(id INTEGER PRIMARY KEY, title TEXT, length TEXT, genre TEXT);
+    INSERT INTO Song(1, 'Ivy', 'R&B');
+    INSERT INTO Song(1, 'Say So', 'Pop');
+    INSERT INTO Song(1, 'Dangerous Woman', 'Pop');
+    INSERT INTO Song(1, 'You Da One', 'Pop');
+    INSERT INTO Song(1, 'Ivy', 'R&B');
+    */
+    //Add these tables in manually & populate with data
+    /*
+    db.run(
+      "CREATE TABLE Artist (id INTEGER PRIMARY KEY id, firstname TEXT, lastname TEXT, datejoined TEXT, genre TEXT)"
+    );
+    db.run(
+      "CREATE TABLE Song (id INTEGER PRIMARY KEY id, length int(11), genre TEXT)"
+    );
+    */
     console.log("New table Users created");
     console.log("New table Accounts created");
 
@@ -78,12 +105,23 @@ app.post("/addUser", (request, response) => {
   }
 });
 
+//search playlists
+app.post("/getPlaylistByName", (request, response) => {
+  console.log("Here is the name " + request.body.getPlaylistByName);
+  const cleansedname = cleanseString(request.body.getPlaylistByName)
+  db.all(`SELECT * from Playlists WHERE name='${cleansedname}'`, (err, rows) => {
+    response.send(JSON.stringify(rows));
+    console.log(rows);
+  });
+});
+
 // helper function that prevents html/css/script malice
 const cleanseString = function(string) {
+  
   return string.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 };
 
-// listen for requests :)
+// listen for requests
 var listener = app.listen(process.env.PORT, () => {
   console.log(`Your app is listening on port ${listener.address().port}`);
 });

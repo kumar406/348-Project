@@ -1,26 +1,35 @@
 // client-side js
-// run by the browser each time your view template referencing it is loaded
 
 const user = [];
 
-// define variables that reference elements on our page
+//User List Form
 const usersForm = document.forms[0];
 const firstInput = usersForm.elements["first"];
 const lastInput = usersForm.elements["last"];
 const actInput = usersForm.elements["act"];
 const usersList = document.getElementById("users");
-const clearButton = document.querySelector('#clear-users');
 
-// request the users from our app's sqlite database
+//Search for playlist-by-genre Form
+const playlistForm = document.forms[1];
+const pnameInput = playlistForm.elements["playlistbyname"];
+
+const tbPlaylistSearchItem = document.getElementById("playlist_name")
+
+
+//Search for artist-by-genre Form
+const artistForm = document.forms[2];
+const genreInput = artistForm.elements["artistbygenre"];
+
+// request the users from the app's sqlite database
 fetch("/getUsers", {})
   .then(res => res.json())
   .then(response => {
     response.forEach(row => {
-      appendNewUser({first:row.firstname, last:row.lastname, date:row.datejoined, act:row.accounttype});
+      appendNewUser({first:row.firstname,last:row.lastname,date:row.datejoined,act:row.accounttype});
     });
   });
 
-// a helper function that creates a list item for a given dream
+// a helper function that updates the table on the page
 const appendNewUser = user => {
   const newTrItem = document.createElement("tr");
   const firstTdItem = document.createElement("td");
@@ -41,12 +50,25 @@ const appendNewUser = user => {
   tbItem.appendChild(newTrItem);
 };
 
-// listen for the form to be submitted and add a new dream when it is
+const createPlaylistTable = playlist => {
+  const newTrItem = document.createElement("tr");
+  const nameTdItem = document.createElement("td");
+  nameTdItem.innerHTML = playlist.name;
+  const dateTdItem = document.createElement("td");
+  dateTdItem.innerHTML = playlist.datecreated;
+  
+  newTrItem.appendChild(nameTdItem);
+  newTrItem.appendChild(dateTdItem);
+  
+  tbPlaylistSearchItem.appendChild(newTrItem);
+}
+
+// listen for userForm to be submitted and add a new user when it is
 usersForm.onsubmit = event => {
   // stop our form submission from refreshing the page
   event.preventDefault();
   const date = new Date().toLocaleDateString();
-  const data = { first: firstInput.value, last: lastInput.value, date: date, act: actInput.value };
+  const data = {first: firstInput.value,last: lastInput.value,date: date,act:actInput.value};
 
   fetch("/addUser", {
     method: "POST",
@@ -66,3 +88,29 @@ usersForm.onsubmit = event => {
   lastInput.value = "";
   actInput.value = 0;
 };
+
+playlistForm.onsubmit = event => {
+  event.preventDefault();
+  //Remove previous entries
+  while (tbPlaylistSearchItem.firstChild) {
+        tbPlaylistSearchItem.removeChild(tbPlaylistSearchItem.firstChild);
+  }
+  
+  console.log("Here is the name " + pnameInput.value);
+  fetch("/getPlaylistByName", {
+    method: "POST",
+    body: JSON.stringify({getPlaylistByName:pnameInput.value}),
+    headers: { "Content-Type": "application/json"}
+  })
+  .then(res => res.json())
+  .then(response => {
+    response.forEach(row => {
+      createPlaylistTable(row);
+    });
+  });
+};
+
+artistForm.onsubmit = event => {
+  event.preventDefault();
+  
+}
