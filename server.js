@@ -33,27 +33,51 @@ db.serialize(() => {
       "CREATE TABLE Users (id INTEGER PRIMARY KEY AUTOINCREMENT, firstname TEXT, lastname TEXT, datejoined TEXT, accounttype int(11))"
     );
     /*
-    CREATE TABLE Artists(id INTEGER PRIMARY KEY, name TEXT, genre TEXT);
-    INSERT INTO Artists VALUES (1, 'Frank Ocean', 'R&B');
-    INSERT INTO Artists VALUES (2, 'Doja Cat', 'Pop');
-    INSERT INTO Artists VALUES (3, 'Ariana Grande', 'Pop');
-    INSERT INTO Artists VALUES (4, 'Rihanna', 'Pop');
-    INSERT INTO Artists VALUES (5, 'Kanye West', 'Hip hop');
-    INSERT INTO Artists VALUES (6, 'J. Cole', 'Hip Hop');
-    INSERT INTO Artists VALUES (7, 'Frank Sinatra', 'Jazz');
-    INSERT INTO Artists VALUES (8, 'Green Day', 'Rock');
-    INSERT INTO Artists VALUES (9, 'Coldplay', 'Pop');
+    CREATE TABLE Artist(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, genre TEXT);
+    INSERT INTO Artist VALUES (1, 'Frank Ocean', 'R&B');
+    INSERT INTO Artist VALUES (2, 'Doja Cat', 'Pop');
+    INSERT INTO Artist VALUES (3, 'Ariana Grande', 'Pop');
+    INSERT INTO Artist VALUES (4, 'Rihanna', 'Pop');
+    INSERT INTO Artist VALUES (5, 'Kanye West', 'Hip hop');
+    INSERT INTO Artist VALUES (6, 'J. Cole', 'Hip Hop');
+    INSERT INTO Artist VALUES (7, 'Frank Sinatra', 'Jazz');
+    INSERT INTO Artist VALUES (8, 'Green Day', 'Rock');
+    INSERT INTO Artist VALUES (9, 'Coldplay', 'Pop');
     
-    CREATE TABLE Song(id INTEGER PRIMARY KEY, title TEXT, length TEXT, genre TEXT);
-    INSERT INTO  Song VALUES(1, 'Ivy', '4:09', 'R&B');
-    INSERT INTO  Song VALUES(2, 'Say So', '3:57', 'Pop');
-    INSERT INTO  Song VALUES(3, 'Dangerous Woman','3:55','Pop');
-    INSERT INTO  Song VALUES(4, 'You Da One', '3:20','Pop');
-    INSERT INTO  Song VALUES(5, 'Stronger', '5:11','Hip hop');
-    INSERT INTO  Song VALUES(6, 'Love Yourz', '3:31','Hip hop');
-    INSERT INTO  Song VALUES(7, 'Fly Me To the Moon', '2:27','Jazz');
-    INSERT INTO  Song VALUES(8, 'American Idiot', '2:56','Rock');
-    INSERT INTO  Song VALUES(9, 'Yellow', '4:26','Pop');
+    CREATE TABLE Songs(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, length TEXT, genre TEXT);
+    INSERT INTO  Songs VALUES(1, 'Ivy', '4:09', 'R&B');
+    INSERT INTO  Songs VALUES(2, 'Say So', '3:57', 'Pop');
+    INSERT INTO  Songs VALUES(3, 'Dangerous Woman','3:55','Pop');
+    INSERT INTO  Songs VALUES(4, 'You Da One', '3:20','Pop');
+    INSERT INTO  Songs VALUES(5, 'Stronger', '5:11','Hip hop');
+    INSERT INTO  Songs VALUES(6, 'Love Yourz', '3:31','Hip hop');
+    INSERT INTO  Songs VALUES(7, 'Fly Me To the Moon', '2:27','Jazz');
+    INSERT INTO  Songs VALUES(8, 'American Idiot', '2:56','Rock');
+    INSERT INTO  Songs VALUES(9, 'Yellow', '4:26','Pop');
+    
+    CREATE TABLE Album(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, num_songs TEXT, genre TEXT);
+    
+    song_album_artist_rel(song_id, album_id, artist_id);
+    
+    CREATE TABLE Playlists(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, datecreated TEXT);
+    INSERT INTO Playlists VALUES(1, 'My Pop Songs', '04/18/2019');
+    INSERT INTO Playlists VALUES(2, 'Joey\'s Favorite', '02/27/2016');
+    INSERT INTO Playlists VALUES(3, 'Workout Playlist', '4/20/2020');
+    INSERT INTO Playlists VALUES(4, 'My Emo Phase', '6/29/2010');  
+    
+    CREATE TABLE playlist_song_rel(song_id INTEGER, playlist_id INTEGER);
+    INSERT INTO playlist_song_rel VALUES(2, 1);
+    INSERT INTO playlist_song_rel VALUES(3, 1);
+    INSERT INTO playlist_song_rel VALUES(4, 1);
+    
+    CREATE TABLE playlist_user_rel(user_id INTEGER, playlist_id INTEGER);
+    INSERT INTO playlist_user_rel VALUES(1, 1);
+    INSERT INTO playlist_user_rel VALUES(2, 3);
+    
+    CREATE TABLE listened_to(user_id INTEGER, song_id INTEGER);
+    INSERT INTO listened_to VALUES(1, 5);
+    INSERT INTO listened_to VALUES(2, 6);
+    INSERT INTO listened_to VALUES(3, 4);
     */
     console.log("New table Users created");
     console.log("New table Accounts created");
@@ -102,7 +126,7 @@ app.post("/addUser", (request, response) => {
 app.post("/getPlaylistByName", (request, response) => {
   console.log("Here is the name " + request.body.getPlaylistByName);
   const cleansedname = cleanseString(request.body.getPlaylistByName)
-  db.all(`SELECT * from Playlists WHERE name='${cleansedname}'`, (err, rows) => {
+  db.all(`select u.firstname, p.name, p.datecreated from Playlists p join playlist_user_rel purel on p.id=purel.playlist_id join Users u on purel.user_id=u.id where name='${cleansedname}'`, (err, rows) => {
     response.send(JSON.stringify(rows));
     console.log(rows);
   });
