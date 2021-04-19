@@ -10,7 +10,7 @@ const usersList = document.getElementById("users");
 //Search for playlist-by-genre Form
 const playlistForm = document.forms[1];
 const pnameInput = playlistForm.elements["playlistbyname"];
-const tbPlaylistSearchItem = document.getElementById("playlist_name")
+const tbPlaylistSearchItem = document.getElementById("playlist_name");
 
 //Search for artist-by-genre Form
 const artistForm = document.forms[2];
@@ -49,11 +49,14 @@ const appendNewUser = user => {
 
 const createPlaylistTable = playlist => {
   const newTrItem = document.createElement("tr");
+  const createdByTdItem = document.createElement("td");
+  createdByTdItem.innerHTML = playlist.firstname;
   const nameTdItem = document.createElement("td");
   nameTdItem.innerHTML = playlist.name;
   const dateTdItem = document.createElement("td");
   dateTdItem.innerHTML = playlist.datecreated;
   
+  newTrItem.appendChild(createdByTdItem);
   newTrItem.appendChild(nameTdItem);
   newTrItem.appendChild(dateTdItem);
   
