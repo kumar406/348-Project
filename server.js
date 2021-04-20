@@ -56,6 +56,15 @@ db.serialize(() => {
     INSERT INTO  Songs VALUES(9, 'Yellow', '4:26','Pop');
     
     CREATE TABLE Album(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, num_songs TEXT, genre TEXT);
+    INSERT INTO Album VALUES(1, 'Blonde', '17', 'Pop');
+    INSERT INTO Album VALUES(2, 'Hot Pink', '', 'R&B');
+    INSERT INTO Album VALUES(3, 'Dangerous Woman', '', '');
+    INSERT INTO Album VALUES(4, 'Talk that Talk', '', '');
+    INSERT INTO Album VALUES(5, 'Graduation', '', '');
+    INSERT INTO Album VALUES(6, '2014 Forest Hills Drive', '', '');
+    INSERT INTO Album VALUES(7, 'It Might as Well be Swing', '', '');
+    INSERT INTO Album VALUES(8, 'American Idiot', '', '');
+    INSERT INTO Album VALUES(9, 'Parachutes', '', '');  
     
     song_album_artist_rel(song_id, album_id, artist_id);
     
@@ -78,6 +87,9 @@ db.serialize(() => {
     INSERT INTO listened_to VALUES(1, 5);
     INSERT INTO listened_to VALUES(2, 6);
     INSERT INTO listened_to VALUES(3, 4);
+    
+    Blonde
+    
     */
     console.log("New table Users created");
     console.log("New table Accounts created");
@@ -137,6 +149,16 @@ app.post("/getArtistByGenre", (request, response) => {
   console.log("Here is the name " + request.body.getArtistByGenre);
   const cleansedgenre = cleanseString(request.body.getArtistByGenre);
   db.all(`SELECT * from Artists WHERE genre='${cleansedgenre}'`, (err, rows) => {
+    response.send(JSON.stringify(rows));
+    console.log(rows);
+  })
+});
+
+//search songs listened to by user
+app.post("/getSongsByUsername", (request, response) => {
+  console.log("Here is the name " + request.body.getSongsByUsername);
+  const cleansedname = cleanseString(request.body.getSongsByUsername);
+  db.all(`select s.title, s.genre from Songs s join listened_to lt on s.id=lt.song_id join Users u on lt.user_id=u.id where u.firstname='${cleansedname}'`, (err, rows) => {
     response.send(JSON.stringify(rows));
     console.log(rows);
   })

@@ -17,6 +17,11 @@ const artistForm = document.forms[2];
 const genreInput = artistForm.elements["artistbygenre"];
 const tbArtistSearchItem = document.getElementById("artist_genre");
 
+//Search for songs-by-name Form
+const songsForm = document.forms[3];
+const snameInput = songsForm.elements["songsbyname"];
+const tbSongSearchItem = document.getElementById("username_song");
+
 // request the users from the app's sqlite database
 fetch("/getUsers", {})
   .then(res => res.json())
@@ -26,7 +31,7 @@ fetch("/getUsers", {})
     });
   });
 
-// a helper function that updates the table on the page
+//updates the user table on the page
 const appendNewUser = user => {
   const newTrItem = document.createElement("tr");
   const firstTdItem = document.createElement("td");
@@ -47,6 +52,7 @@ const appendNewUser = user => {
   tbItem.appendChild(newTrItem);
 };
 
+//create a new row for playlist search
 const createPlaylistTable = playlist => {
   const newTrItem = document.createElement("tr");
   const createdByTdItem = document.createElement("td");
@@ -63,6 +69,7 @@ const createPlaylistTable = playlist => {
   tbPlaylistSearchItem.appendChild(newTrItem);
 };
 
+//create a new row for the artist search
 const createArtistTable = artist => {
   const newTrItem = document.createElement("tr");
   const nameTdItem = document.createElement("td");
@@ -76,9 +83,23 @@ const createArtistTable = artist => {
   tbArtistSearchItem.appendChild(newTrItem);
 }
 
-// listen for userForm to be submitted and add a new user when it is
+//create a new row for the songs listened to search
+const createSongsTable = song => {
+  const newTrItem = document.createElement("tr");
+  const songnameTdItem = document.createElement("td");
+  songnameTdItem.innerHTML = song.title;
+  const genreTdItem = document.createElement("td");
+  genreTdItem.innerHTML = song.genre;
+  
+  newTrItem.appendChild(songnameTdItem);
+  newTrItem.appendChild(genreTdItem);
+  
+  tbSongSearchItem.appendChild(newTrItem);
+}
+
+//add a new user to the list when submitted
 usersForm.onsubmit = event => {
-  // stop our form submission from refreshing the page
+  //stop the form submission from refreshing the page
   event.preventDefault();
   const date = new Date().toLocaleDateString();
   const data = {first: firstInput.value,last: lastInput.value,date: date,act:actInput.value};
@@ -95,17 +116,17 @@ usersForm.onsubmit = event => {
   
   appendNewUser(data);
 
-  // reset form
+  //reset form
   firstInput.value = "";
   firstInput.focus();
   lastInput.value = "";
   actInput.value = 0;
 };
 
-//Submission for search for playlists
+//submission for search for playlists
 playlistForm.onsubmit = event => {
   event.preventDefault();
-  //Remove previous entries
+  //remove previous entries
   while (tbPlaylistSearchItem.firstChild) {
         tbPlaylistSearchItem.removeChild(tbPlaylistSearchItem.firstChild);
   }
@@ -123,10 +144,10 @@ playlistForm.onsubmit = event => {
   });
 };
 
-//Submission for search for artists
+//submission for search for artists
 artistForm.onsubmit = event => {
   event.preventDefault();
-  //Remove previous entries
+  //remove previous entries
   while (tbArtistSearchItem.firstChild) {
     tbArtistSearchItem.removeChild(tbArtistSearchItem.firstChild);
   } 
@@ -140,6 +161,27 @@ artistForm.onsubmit = event => {
   .then(response => {
     response.forEach(row => {
       createArtistTable(row);
+    });
+  });
+};
+
+//submission for listening to songs
+songsForm.onsubmit = event => {
+  event.preventDefault();
+  //remove previous entries
+  while (tbSongSearchItem.firstChild) {
+    tbSongSearchItem.removeChild(tbSongSearchItem.firstChild);
+  } 
+  console.log("Here is the name " + snameInput.value);
+  fetch("/getSongsByUsername", {
+    method: "POST",
+    body: JSON.stringify({getSongsByUsername:snameInput.value}),
+    headers: { "Content-Type": "application/json"}
+  })
+  .then(res => res.json())
+  .then(response => {
+    response.forEach(row => {
+      createSongsTable(row);
     });
   });
 };
