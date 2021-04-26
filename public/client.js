@@ -12,10 +12,10 @@ const playlistForm = document.forms[1];
 const pnameInput = playlistForm.elements["playlistbyname"];
 const tbPlaylistSearchItem = document.getElementById("playlist_name");
 
-//Search for artist-by-genre Form
+//Search for songs-by-artist Form
 const artistForm = document.forms[2];
-const genreInput = artistForm.elements["artistbygenre"];
-const tbArtistSearchItem = document.getElementById("artist_genre");
+const songInput = artistForm.elements["songsbyartist"];
+const tbArtistSearchItem = document.getElementById("song_artist");
 
 //Search for songs-by-name Form
 const songsForm = document.forms[3];
@@ -27,7 +27,7 @@ fetch("/getUsers", {})
   .then(res => res.json())
   .then(response => {
     response.forEach(row => {
-      appendNewUser({first:row.firstname,last:row.lastname,date:row.datejoined,act:row.accounttype});
+      appendNewUser({first:row.firstname,last:row.lastname,date:row.datejoined});
     });
   });
 
@@ -40,13 +40,10 @@ const appendNewUser = user => {
   lastTdItem.innerHTML = user.last;
   const dateTdItem = document.createElement("td");
   dateTdItem.innerHTML = user.date;
-  const actTdItem = document.createElement("td");
-  actTdItem.innerHTML = user.act;
   
   newTrItem.appendChild(firstTdItem);
   newTrItem.appendChild(lastTdItem);
   newTrItem.appendChild(dateTdItem);
-  newTrItem.appendChild(actTdItem);
   
   const tbItem = document.getElementById("user_table")
   tbItem.appendChild(newTrItem);
@@ -70,14 +67,14 @@ const createPlaylistTable = playlist => {
 };
 
 //create a new row for the artist search
-const createArtistTable = artist => {
+const createSongArtistTable = artist => {
   const newTrItem = document.createElement("tr");
-  const nameTdItem = document.createElement("td");
-  nameTdItem.innerHTML = artist.name;
+  const songTdItem = document.createElement("td");
+  songTdItem.innerHTML = artist.title;
   const genreTdItem = document.createElement("td");
   genreTdItem.innerHTML = artist.genre;
   
-  newTrItem.appendChild(nameTdItem);
+  newTrItem.appendChild(songTdItem);
   newTrItem.appendChild(genreTdItem);
   
   tbArtistSearchItem.appendChild(newTrItem);
@@ -109,10 +106,10 @@ usersForm.onsubmit = event => {
     body: JSON.stringify(data),
     headers: { "Content-Type": "application/json" }
   })
-    .then(res => res.json())
-    .then(response => {
-      console.log(JSON.stringify(response));
-    });
+  .then(res => res.json())
+  .then(response => {
+    console.log(JSON.stringify(response));
+  });
   
   appendNewUser(data);
 
@@ -144,23 +141,24 @@ playlistForm.onsubmit = event => {
   });
 };
 
-//submission for search for artists
+//submission for search for songs by artist
 artistForm.onsubmit = event => {
   event.preventDefault();
   //remove previous entries
   while (tbArtistSearchItem.firstChild) {
     tbArtistSearchItem.removeChild(tbArtistSearchItem.firstChild);
   } 
-  console.log("Here is the genre " + genreInput.value);
-  fetch("/getArtistByGenre", {
+  console.log("Here is the genre " + songInput.value);
+  
+  fetch("/getSongsByArtist", {
     method: "POST",
-    body: JSON.stringify({getArtistByGenre:genreInput.value}),
+    body: JSON.stringify({getSongsByArtist:songInput.value}),
     headers: { "Content-Type": "application/json"}
   })
   .then(res => res.json())
   .then(response => {
     response.forEach(row => {
-      createArtistTable(row);
+      createSongArtistTable(row);
     });
   });
 };

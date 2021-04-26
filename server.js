@@ -56,18 +56,16 @@ db.serialize(() => {
     INSERT INTO  Songs VALUES(9, 'Yellow', '4:26','Pop');
     
     CREATE TABLE Album(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, num_songs TEXT, genre TEXT);
-    INSERT INTO Album VALUES(1, 'Blonde', '17', 'Pop');
-    INSERT INTO Album VALUES(2, 'Hot Pink', '', 'R&B');
-    INSERT INTO Album VALUES(3, 'Dangerous Woman', '', '');
-    INSERT INTO Album VALUES(4, 'Talk that Talk', '', '');
-    INSERT INTO Album VALUES(5, 'Graduation', '', '');
-    INSERT INTO Album VALUES(6, '2014 Forest Hills Drive', '', '');
-    INSERT INTO Album VALUES(7, 'It Might as Well be Swing', '', '');
-    INSERT INTO Album VALUES(8, 'American Idiot', '', '');
-    INSERT INTO Album VALUES(9, 'Parachutes', '', '');  
-    
-    song_album_artist_rel(song_id, album_id, artist_id);
-    
+    INSERT INTO Albums VALUES(1, 'Blonde', '17', 'Pop');
+    INSERT INTO Albums VALUES(2, 'Hot Pink', '12', 'R&B');
+    INSERT INTO Albums VALUES(3, 'Dangerous Woman', '9', 'Pop');
+    INSERT INTO Albums VALUES(4, 'Talk that Talk', '13', 'Pop');
+    INSERT INTO Albums VALUES(5, 'Graduation', '15', 'Hip Hop');
+    INSERT INTO Albums VALUES(6, '2014 Forest Hills Drive', '13', 'Hip Hop');
+    INSERT INTO Albums VALUES(7, 'It Might as Well be Swing', '12', 'Jazz');
+    INSERT INTO Albums VALUES(8, 'American Idiot', '9', 'Rock');
+    INSERT INTO Albums VALUES(9, 'Parachutes', '11', 'Pop');  
+        
     CREATE TABLE Playlists(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, datecreated TEXT);
     INSERT INTO Playlists VALUES(1, 'My Pop Songs', '04/18/2019');
     INSERT INTO Playlists VALUES(2, 'Joey\'s Favorite', '02/27/2016');
@@ -88,7 +86,38 @@ db.serialize(() => {
     INSERT INTO listened_to VALUES(2, 6);
     INSERT INTO listened_to VALUES(3, 4);
     
-    Blonde
+    CREATE TABLE album_song(album_id INTEGER, song_id INTEGER);
+    INSERT INTO album_song VALUES(1, 1);
+    INSERT INTO album_song VALUES(2, 2);
+    INSERT INTO album_song VALUES(3, 3);
+    INSERT INTO album_song VALUES(4, 4);
+    INSERT INTO album_song VALUES(5, 5);
+    INSERT INTO album_song VALUES(6, 6);
+    INSERT INTO album_song VALUES(7, 7);
+    INSERT INTO album_song VALUES(8, 8);
+    INSERT INTO album_song VALUES(9, 9);
+    
+    CREATE TABLE album_song_rel(album_id INTEGER, song_id INTEGER);
+    INSERT INTO album_song_rel VALUES(1, 1);
+    INSERT INTO album_song_rel VALUES(2, 2);
+    INSERT INTO album_song_rel VALUES(3, 3);
+    INSERT INTO album_song_rel VALUES(4, 4);
+    INSERT INTO album_song_rel VALUES(5, 5);
+    INSERT INTO album_song_rel VALUES(6, 6);
+    INSERT INTO album_song_rel VALUES(7, 7);
+    INSERT INTO album_song_rel VALUES(8, 8);
+    INSERT INTO album_song_rel VALUES(9, 9);
+    
+    CREATE TABLE album_artist_rel(album_id INTEGER, artist_id INTEGER);
+    INSERT INTO album_artist_rel VALUES(1, 1);
+    INSERT INTO album_artist_rel VALUES(2, 2);
+    INSERT INTO album_artist_rel VALUES(3, 3);
+    INSERT INTO album_artist_rel VALUES(4, 4);
+    INSERT INTO album_artist_rel VALUES(5, 5);
+    INSERT INTO album_artist_rel VALUES(6, 6);
+    INSERT INTO album_artist_rel VALUES(7, 7);
+    INSERT INTO album_artist_rel VALUES(8, 8);
+    INSERT INTO album_artist_rel VALUES(9, 9);
     
     */
     console.log("New table Users created");
@@ -145,10 +174,10 @@ app.post("/getPlaylistByName", (request, response) => {
 });
 
 //search artists
-app.post("/getArtistByGenre", (request, response) => {
-  console.log("Here is the name " + request.body.getArtistByGenre);
-  const cleansedgenre = cleanseString(request.body.getArtistByGenre);
-  db.all(`SELECT * from Artists WHERE genre='${cleansedgenre}'`, (err, rows) => {
+app.post("/getSongsByArtist", (request, response) => {
+  console.log("Here is the name in server " + request.body.getSongsByArtist);
+  const cleansedartist = cleanseString(request.body.getSongsByArtist);
+  db.all(`select s.title, s.genre from Songs s join album_song_rel asrel on s.id=asrel.song_id join Albums al on asrel.album_id=al.id join album_artist_rel aarel on al.id=aarel.album_id join Artists ar on ar.id=aarel.artist_id where ar.name='${cleansedartist}'`, (err, rows) => {
     response.send(JSON.stringify(rows));
     console.log(rows);
   })
