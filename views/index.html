@@ -45,10 +45,9 @@
       
       <table>
         <thead>
-          <tr><th>First Name</th>
-              <th>Last Name</th>
-              <th>Date Joined</th>
-              <th>Account Type</th>
+          <tr><th>First</th>
+              <th>Last</th>
+              <th>Joined</th>
           </tr>
         </thead>
         <tbody id="user_table">
@@ -64,42 +63,42 @@
       <table>
         <thead>
           <tr>
-              <th>Created By</th>
+              <th>Creator</th>
               <th>Name</th>
-              <th>Date Created</th>
+              <th>Date</th>
           </tr>
         </thead>
         <tbody id="playlist_name">
         </tbody>
       </table>
       
-      <p>Search for artists in a specific genre:</p>
+      <p>Search for songs by a specific artist:</p>
       <form>
-        <input name="artistbygenre" type="text" maxlength="100" placeholder="Genre">
+        <input name="songsbyartist" type="text" maxlength="100" placeholder="Artist">
         <button type="submit">Search</button>    
       </form>
       
       <table>
         <thead>
           <tr>
-              <th>Name</th>
+              <th>Title</th>
               <th>Genre</th>
           </tr>
         </thead>
-        <tbody id="artist_genre">
+        <tbody id="song_artist">
         </tbody>
       </table>
       
-      <p>Find what songs someone is listening to!</p>
+      <p>Find what songs someone is listening to:</p>
       <form>
-        <input name="songsbyname" type="text" maxlength="100" placeholder="Name">
+        <input name="songsbyname" type="text" maxlength="100" placeholder="Name Of User">
         <button type="submit">Search</button>    
       </form>
       
       <table>
         <thead>
           <tr>
-              <th>Song Name</th>
+              <th>Title</th>
               <th>Genre</th>
           </tr>
         </thead>
