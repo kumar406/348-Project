@@ -8,8 +8,9 @@ For the CS 348 Project.
 **Working Features**
 * Adding Users to the service
 * Searching for playlists and see who created them
-* Search for what songs another user has listened to.
+* Search for what songs another user has listened to
 * Search for songs by a specfic artist
+* Update user account type from Standard to Premium and vice versa
 
 **SQL Related Features**
 * Relational database using sqlite3 - 10+ tables
