@@ -219,5 +219,6 @@ updateAccForm.onsubmit = event => {
     .then(response => {
       console.log(JSON.stringify(response));
     });
-  document.getElementById("accupdateresponse").innerHTML = "Account updated successfully!"
+  document.getElementById("accupdateresponse").innerHTML =
+    "Account updated successfully!";
 };
