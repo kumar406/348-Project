@@ -22,12 +22,21 @@ const songsForm = document.forms[3];
 const snameInput = songsForm.elements["songsbyname"];
 const tbSongSearchItem = document.getElementById("username_song");
 
+//Update user account-type
+const updateAccForm = document.forms[4];
+const updateAccInput = updateAccForm.elements["updateacctype"];
+const updateAccSORP = updateAccForm.elements["actupdate"];
+
 // request the users from the app's sqlite database
 fetch("/getUsers", {})
   .then(res => res.json())
   .then(response => {
     response.forEach(row => {
-      appendNewUser({first:row.firstname,last:row.lastname,date:row.datejoined});
+      appendNewUser({
+        first: row.firstname,
+        last: row.lastname,
+        date: row.datejoined
+      });
     });
   });
 
@@ -40,12 +49,12 @@ const appendNewUser = user => {
   lastTdItem.innerHTML = user.last;
   const dateTdItem = document.createElement("td");
   dateTdItem.innerHTML = user.date;
-  
+
   newTrItem.appendChild(firstTdItem);
   newTrItem.appendChild(lastTdItem);
   newTrItem.appendChild(dateTdItem);
-  
-  const tbItem = document.getElementById("user_table")
+
+  const tbItem = document.getElementById("user_table");
   tbItem.appendChild(newTrItem);
 };
 
@@ -58,11 +67,11 @@ const createPlaylistTable = playlist => {
   nameTdItem.innerHTML = playlist.name;
   const dateTdItem = document.createElement("td");
   dateTdItem.innerHTML = playlist.datecreated;
-  
+
   newTrItem.appendChild(createdByTdItem);
   newTrItem.appendChild(nameTdItem);
   newTrItem.appendChild(dateTdItem);
-  
+
   tbPlaylistSearchItem.appendChild(newTrItem);
 };
 
@@ -73,12 +82,12 @@ const createSongArtistTable = artist => {
   songTdItem.innerHTML = artist.title;
   const genreTdItem = document.createElement("td");
   genreTdItem.innerHTML = artist.genre;
-  
+
   newTrItem.appendChild(songTdItem);
   newTrItem.appendChild(genreTdItem);
-  
+
   tbArtistSearchItem.appendChild(newTrItem);
-}
+};
 
 //create a new row for the songs listened to search
 const createSongsTable = song => {
@@ -87,30 +96,35 @@ const createSongsTable = song => {
   songnameTdItem.innerHTML = song.title;
   const genreTdItem = document.createElement("td");
   genreTdItem.innerHTML = song.genre;
-  
+
   newTrItem.appendChild(songnameTdItem);
   newTrItem.appendChild(genreTdItem);
-  
+
   tbSongSearchItem.appendChild(newTrItem);
-}
+};
 
 //add a new user to the list when submitted
 usersForm.onsubmit = event => {
   //stop the form submission from refreshing the page
   event.preventDefault();
   const date = new Date().toLocaleDateString();
-  const data = {first: firstInput.value,last: lastInput.value,date: date,act:actInput.value};
+  const data = {
+    first: firstInput.value,
+    last: lastInput.value,
+    date: date,
+    act: actInput.value
+  };
 
   fetch("/addUser", {
     method: "POST",
     body: JSON.stringify(data),
     headers: { "Content-Type": "application/json" }
   })
-  .then(res => res.json())
-  .then(response => {
-    console.log(JSON.stringify(response));
-  });
-  
+    .then(res => res.json())
+    .then(response => {
+      console.log(JSON.stringify(response));
+    });
+
   appendNewUser(data);
 
   //reset form
@@ -125,20 +139,20 @@ playlistForm.onsubmit = event => {
   event.preventDefault();
   //remove previous entries
   while (tbPlaylistSearchItem.firstChild) {
-        tbPlaylistSearchItem.removeChild(tbPlaylistSearchItem.firstChild);
+    tbPlaylistSearchItem.removeChild(tbPlaylistSearchItem.firstChild);
   }
   console.log("Here is the name " + pnameInput.value);
   fetch("/getPlaylistByName", {
     method: "POST",
-    body: JSON.stringify({getPlaylistByName:pnameInput.value}),
-    headers: { "Content-Type": "application/json"}
+    body: JSON.stringify({ getPlaylistByName: pnameInput.value }),
+    headers: { "Content-Type": "application/json" }
   })
-  .then(res => res.json())
-  .then(response => {
-    response.forEach(row => {
-      createPlaylistTable(row);
+    .then(res => res.json())
+    .then(response => {
+      response.forEach(row => {
+        createPlaylistTable(row);
+      });
     });
-  });
 };
 
 //submission for search for songs by artist
@@ -147,20 +161,20 @@ artistForm.onsubmit = event => {
   //remove previous entries
   while (tbArtistSearchItem.firstChild) {
     tbArtistSearchItem.removeChild(tbArtistSearchItem.firstChild);
-  } 
+  }
   console.log("Here is the genre " + songInput.value);
-  
+
   fetch("/getSongsByArtist", {
     method: "POST",
-    body: JSON.stringify({getSongsByArtist:songInput.value}),
-    headers: { "Content-Type": "application/json"}
+    body: JSON.stringify({ getSongsByArtist: songInput.value }),
+    headers: { "Content-Type": "application/json" }
   })
-  .then(res => res.json())
-  .then(response => {
-    response.forEach(row => {
-      createSongArtistTable(row);
+    .then(res => res.json())
+    .then(response => {
+      response.forEach(row => {
+        createSongArtistTable(row);
+      });
     });
-  });
 };
 
 //submission for listening to songs
@@ -169,17 +183,41 @@ songsForm.onsubmit = event => {
   //remove previous entries
   while (tbSongSearchItem.firstChild) {
     tbSongSearchItem.removeChild(tbSongSearchItem.firstChild);
-  } 
+  }
   console.log("Here is the name " + snameInput.value);
   fetch("/getSongsByUsername", {
     method: "POST",
-    body: JSON.stringify({getSongsByUsername:snameInput.value}),
-    headers: { "Content-Type": "application/json"}
+    body: JSON.stringify({ getSongsByUsername: snameInput.value }),
+    headers: { "Content-Type": "application/json" }
   })
-  .then(res => res.json())
-  .then(response => {
-    response.forEach(row => {
-      createSongsTable(row);
+    .then(res => res.json())
+    .then(response => {
+      response.forEach(row => {
+        createSongsTable(row);
+      });
     });
-  });
+};
+
+//update the user's account type on submit
+updateAccForm.onsubmit = event => {
+  event.preventDefault();
+  console.log("Here is the name for acc update" + updateAccInput.value);
+  console.log("Here is the value for the acc update" + updateAccSORP.value);
+  var fullname = updateAccInput.value.split(" ");
+  const data = {
+    first: fullname[0],
+    last: fullname[1],
+    acc: updateAccSORP.value
+  };
+
+  fetch("/updateUserAcc", {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: { "Content-Type": "application/json" }
+  })
+    .then(res => res.json())
+    .then(response => {
+      console.log(JSON.stringify(response));
+    });
+  document.getElementById("accupdateresponse").innerHTML = "Account updated successfully!"
 };

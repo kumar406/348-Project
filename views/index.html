@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="A lightweight page with a small backend">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A lightweight page with a small backend"
+    />
 
     <title>Welcome to Music Streaming Service</title>
 
     <!-- import the webpage's stylesheet -->
-    <link rel="stylesheet" href="/style.css">
-    
+    <link rel="stylesheet" href="/style.css" />
+
     <!-- import the webpage's client-side javascript file -->
     <script src="/client.js" defer></script>
   </head>
@@ -23,12 +26,22 @@
 
     <main>
       <p class="bold">Welcome!</p>
-      
+
       <p>Enter a new user:</p>
-      
+
       <form>
-        <input name="first" type="text" maxlength="100" placeholder="First Name">
-        <input name="last" type="text" maxlength="100" placeholder="Last Name">
+        <input
+          name="first"
+          type="text"
+          maxlength="100"
+          placeholder="First Name"
+        />
+        <input
+          name="last"
+          type="text"
+          maxlength="100"
+          placeholder="Last Name"
+        />
         <label>
           Account Type:
         </label>
@@ -42,69 +55,105 @@
         </select>
         <button type="submit" id="submit-user">Add User</button>
       </form>
-      
+
       <table>
         <thead>
-          <tr><th>First</th>
-              <th>Last</th>
-              <th>Joined</th>
+          <tr>
+            <th>First</th>
+            <th>Last</th>
+            <th>Joined</th>
           </tr>
         </thead>
-        <tbody id="user_table">
-        </tbody>
+        <tbody id="user_table"></tbody>
       </table>
-      
+
       <p>Search for a playlist by name:</p>
       <form>
-        <input name="playlistbyname" type="text" maxlength="100" placeholder="Name">
-        <button type="submit">Search</button>    
+        <input
+          name="playlistbyname"
+          type="text"
+          maxlength="100"
+          placeholder="Name"
+        />
+        <button type="submit">Search</button>
       </form>
-      
+
       <table>
         <thead>
           <tr>
-              <th>Creator</th>
-              <th>Name</th>
-              <th>Date</th>
+            <th>Creator</th>
+            <th>Name</th>
+            <th>Date</th>
           </tr>
         </thead>
-        <tbody id="playlist_name">
-        </tbody>
+        <tbody id="playlist_name"></tbody>
       </table>
-      
+
       <p>Search for songs by a specific artist:</p>
       <form>
-        <input name="songsbyartist" type="text" maxlength="100" placeholder="Artist">
-        <button type="submit">Search</button>    
+        <input
+          name="songsbyartist"
+          type="text"
+          maxlength="100"
+          placeholder="Artist"
+        />
+        <button type="submit">Search</button>
       </form>
-      
+
       <table>
         <thead>
           <tr>
-              <th>Title</th>
-              <th>Genre</th>
+            <th>Title</th>
+            <th>Genre</th>
           </tr>
         </thead>
-        <tbody id="song_artist">
-        </tbody>
+        <tbody id="song_artist"></tbody>
       </table>
-      
+
       <p>Find what songs someone is listening to:</p>
       <form>
-        <input name="songsbyname" type="text" maxlength="100" placeholder="Name Of User">
-        <button type="submit">Search</button>    
+        <input
+          name="songsbyname"
+          type="text"
+          maxlength="100"
+          placeholder="Name Of User"
+        />
+        <button type="submit">Search</button>
       </form>
-      
+
       <table>
         <thead>
           <tr>
-              <th>Title</th>
-              <th>Genre</th>
+            <th>Title</th>
+            <th>Genre</th>
           </tr>
         </thead>
-        <tbody id="username_song">
-        </tbody>
+        <tbody id="username_song"></tbody>
       </table>
+
+      <p>Update a user's Account Type:</p>
+      <form>
+        <input
+          name="updateacctype"
+          type="text"
+          maxlength="100"
+          placeholder="Full Name Of User"
+        />
+        <label>
+          Account Type:
+        </label>
+        <select name="actupdate">
+          <option value="0">
+            Standard
+          </option>
+          <option value="1">
+            Premium
+          </option>
+        </select>
+        <button type="submit">Switch</button>
+      </form>
+      
+      <p id="accupdateresponse"></p>
       
     </main>
   </body>
