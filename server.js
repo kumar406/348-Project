@@ -26,6 +26,7 @@ db.serialize(() => {
     db.run(
       "CREATE TABLE Users (id INTEGER PRIMARY KEY AUTOINCREMENT, firstname TEXT, lastname TEXT, datejoined TEXT, accounttype int(11))"
     );
+
     /*
     CREATE TABLE Artist(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, genre TEXT);
     INSERT INTO Artist VALUES (1, 'Frank Ocean', 'R&B');
@@ -105,12 +106,8 @@ db.serialize(() => {
     console.log("New table Users created");
     console.log("New table Accounts created");
   } else {
-    console.log('Database "Users" ready to go!');
-    db.each("SELECT * from Users", (err, row) => {
-      if (row) {
-        console.log(`record: ${row.username}`);
-      }
-    });
+    console.log('Database "Music-Streaming-Service" ready to go!');
+    db.run("PRAGMA read_uncommitted = 0");
   }
 });
 
@@ -134,6 +131,7 @@ app.post("/addUser", (request, response) => {
     const cleansedlast = cleanseString(request.body.last);
     const cleanseddate = cleanseString(request.body.date);
     const cleansedact = cleanseString(request.body.act);
+    db.run(`BEGIN EXCLUSIVE;`);
     db.run(
       `INSERT INTO Users (firstname, lastname, datejoined, accounttype) VALUES (?,?,?,?)`,
       cleansedfirst,
@@ -148,6 +146,7 @@ app.post("/addUser", (request, response) => {
         }
       }
     );
+    db.run(`COMMIT;`);
   }
 });
 
@@ -195,6 +194,7 @@ app.post("/updateUserAcc", (request, response) => {
   const cleansedfirst = cleanseString(request.body.first);
   const cleansedlast = cleanseString(request.body.last);
   const cleansedacc = cleanseString(request.body.acc);
+  db.run(`BEGIN EXCLUSIVE;`);
   db.all(
     `UPDATE Users SET accounttype=${cleansedacc} where firstname='${cleansedfirst}' and lastname='${cleansedlast}'`,
     (err, rows) => {
@@ -203,6 +203,18 @@ app.post("/updateUserAcc", (request, response) => {
       } else {
         response.send(JSON.stringify("success"));
       }
+    }
+  );
+  db.run(`COMMIT;`);
+});
+
+app.post("/getWebsiteStats", (request, response) => {
+  db.run(`PRAGMA read_uncommitted = 0`);
+  db.all(
+    `select (select count(u.id) from Users u) as user, (select count(a.id) from Artists a) as artist, (select count(p.id) from Playlists p) as playlist, (select s.title from Songs s where s.id=(select song_id from (select song_id, count(*) as cnt from listened_to group by song_id order by count(*) desc limit 1) x)) as top_song`,
+    (err, rows) => {
+      response.send(JSON.stringify(rows));
+      console.log(rows);
     }
   );
 });

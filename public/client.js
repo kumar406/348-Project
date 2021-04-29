@@ -27,6 +27,10 @@ const updateAccForm = document.forms[4];
 const updateAccInput = updateAccForm.elements["updateacctype"];
 const updateAccSORP = updateAccForm.elements["actupdate"];
 
+//Update Website Stats
+const websiteStatsForm = document.forms[5];
+const tbWebsiteStats = document.getElementById("website_stats");
+
 // request the users from the app's sqlite database
 fetch("/getUsers", {})
   .then(res => res.json())
@@ -101,6 +105,26 @@ const createSongsTable = song => {
   newTrItem.appendChild(genreTdItem);
 
   tbSongSearchItem.appendChild(newTrItem);
+};
+
+//create a new row for the website stats
+const createWebsiteStats = stats => {
+  const newTrItem = document.createElement("tr");
+  const usernumTdItem = document.createElement("td");
+  usernumTdItem.innerHTML = stats.user;
+  const artistnumTdItem = document.createElement("td");
+  artistnumTdItem.innerHTML = stats.artist;
+  const playlistnumTdItem = document.createElement("td");
+  playlistnumTdItem.innerHTML = stats.playlist;
+  const topsongTdItem = document.createElement("td");
+  topsongTdItem.innerHTML = stats.top_song;
+
+  newTrItem.appendChild(usernumTdItem);
+  newTrItem.appendChild(artistnumTdItem);
+  newTrItem.appendChild(playlistnumTdItem);
+  newTrItem.appendChild(topsongTdItem);
+
+  tbWebsiteStats.appendChild(newTrItem);
 };
 
 //add a new user to the list when submitted
@@ -221,4 +245,22 @@ updateAccForm.onsubmit = event => {
     });
   document.getElementById("accupdateresponse").innerHTML =
     "Account updated successfully!";
+};
+
+//update the website stats
+websiteStatsForm.onsubmit = event => {
+  event.preventDefault();
+  while (tbWebsiteStats.firstChild) {
+    tbWebsiteStats.removeChild(tbWebsiteStats.firstChild);
+  }
+  fetch("/getWebsiteStats", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" }
+  })
+    .then(res => res.json())
+    .then(response => {
+      response.forEach(row => {
+        createWebsiteStats(row);
+      });
+    });
 };
