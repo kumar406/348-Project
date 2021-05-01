@@ -31,19 +31,6 @@ const updateAccSORP = updateAccForm.elements["actupdate"];
 const websiteStatsForm = document.forms[5];
 const tbWebsiteStats = document.getElementById("website_stats");
 
-// request the users from the app's sqlite database
-fetch("/getUsers", {})
-  .then(res => res.json())
-  .then(response => {
-    response.forEach(row => {
-      appendNewUser({
-        first: row.firstname,
-        last: row.lastname,
-        date: row.datejoined
-      });
-    });
-  });
-
 //updates the user table on the page
 const appendNewUser = user => {
   const newTrItem = document.createElement("tr");
@@ -53,7 +40,10 @@ const appendNewUser = user => {
   lastTdItem.innerHTML = user.last;
   const dateTdItem = document.createElement("td");
   dateTdItem.innerHTML = user.date;
+  const idTdItem = document.createElement("td");
+  idTdItem.innerHTML = user.id;
 
+  newTrItem.appendChild(idTdItem);
   newTrItem.appendChild(firstTdItem);
   newTrItem.appendChild(lastTdItem);
   newTrItem.appendChild(dateTdItem);
@@ -149,7 +139,18 @@ usersForm.onsubmit = event => {
       console.log(JSON.stringify(response));
     });
 
-  appendNewUser(data);
+  fetch("/getUsers", {})
+  .then(res => res.json())
+  .then(response => {
+    response.forEach(row => {
+      appendNewUser({
+        id: row.id,
+        first: row.firstname,
+        last: row.lastname,
+        date: row.datejoined
+      });
+    });
+  });
 
   //reset form
   firstInput.value = "";
