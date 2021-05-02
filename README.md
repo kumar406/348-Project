@@ -15,5 +15,6 @@ For the CS 348 Project.
 
 **SQL Related Features**
 * Relational database using sqlite3 - 10+ tables
+* Usage of prepared statements in JS for search queries
 * Indexes on certain columns to support faster searching
-* Concurrency control for update and insert queries
+* Concurrency control, Isolation Levels, and Transaction Types on queries
