@@ -239,10 +239,8 @@ updateAccForm.onsubmit = event => {
   })
     .then(res => res.json())
     .then(response => {
-      console.log(JSON.stringify(response));
+      document.getElementById("accupdateresponse").innerHTML = JSON.stringify(response);
     });
-  document.getElementById("accupdateresponse").innerHTML =
-    "Account updated successfully!";
 };
 
 //update the website stats

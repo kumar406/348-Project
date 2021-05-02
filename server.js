@@ -3,6 +3,7 @@
 // init project
 const express = require("express");
 const bodyParser = require("body-parser");
+const { Sequelize, Model, DataTypes } = require("sequelize");
 const app = express();
 const fs = require("fs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -16,98 +17,115 @@ const dbFile = "./.data/sqlite.db";
 const exists = fs.existsSync(dbFile);
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database(dbFile);
+const sequelize = new Sequelize("sqlite::memory:");
+
+try {
+  sequelize.authenticate();
+  console.log("Connection has been established successfully.");
+} catch (error) {
+  console.error("Unable to connect to the database:", error);
+}
+
+class Account extends Model {}
+Account.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
+    description: DataTypes.TEXT
+  },
+  { sequelize, modelName: "account" }
+);
+
+(async () => {
+  await sequelize.sync();
+  try {
+    const standard = await Account.build({
+      id: 0,
+      description: "Standard"
+    });
+    console.log(standard.toJSON());
+    await standard.save();
+    console.log("Standard was saved to the database!");
+  } catch (err) {
+    console.log(err);
+  }
+
+  try {
+    const premium = await Account.build({
+      id: 1,
+      description: "Premium"
+    });
+    console.log(premium.toJSON());
+    await premium.save();
+    console.log("Premium was saved to the database!");
+  } catch (err) {
+    console.log(err);
+  }
+})();
+
+class Playlist extends Model {}
+Playlist.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
+    name: DataTypes.TEXT,
+    datecreated: DataTypes.DATE
+  },
+  { sequelize, modelName: "playlist" }
+);
+
+(async () => {
+  await sequelize.sync();
+  try {
+    const playlist1 = await Playlist.build({
+      id: 0,
+      name: "My Pop Songs",
+      datecreated: new Date(2021, 4, 23)
+    });
+    console.log(playlist1.toJSON());
+    await playlist1.save();
+    console.log("playlist1 was saved to the database!");
+  } catch (err) {
+    console.log(err);
+  }
+
+  try {
+    const playlist2 = await Playlist.build({
+      id: 1,
+      name: "My Emo Phase",
+      datecreated: new Date(2021, 4, 23)
+    });
+    console.log(playlist2.toJSON());
+    await playlist2.save();
+    console.log("playlist2 was saved to the database!");
+  } catch (err) {
+    console.log(err);
+  }
+})();
+
+sequelize.sync();
 
 // if ./.data/sqlite.db does not exist, create it, otherwise print records to console
 db.serialize(() => {
   if (!exists) {
-    db.run("CREATE TABLE Accounts(id INTEGER PRIMARY KEY, description TEXT)");
-    db.run("INSERT INTO Accounts VALUES (0, 'Standard')");
-    db.run("INSERT INTO Accounts VALUES (1, 'Premium')");
     db.run(
       "CREATE TABLE Users (id INTEGER PRIMARY KEY AUTOINCREMENT, firstname TEXT, lastname TEXT, datejoined TEXT, accounttype int(11))"
     );
-
-    /*
-    CREATE TABLE Artist(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, genre TEXT);
-    INSERT INTO Artist VALUES (1, 'Frank Ocean', 'R&B');
-    INSERT INTO Artist VALUES (2, 'Doja Cat', 'Pop');
-    INSERT INTO Artist VALUES (3, 'Ariana Grande', 'Pop');
-    INSERT INTO Artist VALUES (4, 'Rihanna', 'Pop');
-    INSERT INTO Artist VALUES (5, 'Kanye West', 'Hip hop');
-    INSERT INTO Artist VALUES (6, 'J. Cole', 'Hip Hop');
-    INSERT INTO Artist VALUES (7, 'Frank Sinatra', 'Jazz');
-    INSERT INTO Artist VALUES (8, 'Green Day', 'Rock');
-    INSERT INTO Artist VALUES (9, 'Coldplay', 'Pop');
-    
-    CREATE TABLE Songs(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, length TEXT, genre TEXT);
-    INSERT INTO  Songs VALUES(1, 'Ivy', '4:09', 'R&B');
-    INSERT INTO  Songs VALUES(2, 'Say So', '3:57', 'Pop');
-    INSERT INTO  Songs VALUES(3, 'Dangerous Woman','3:55','Pop');
-    INSERT INTO  Songs VALUES(4, 'You Da One', '3:20','Pop');
-    INSERT INTO  Songs VALUES(5, 'Stronger', '5:11','Hip hop');
-    INSERT INTO  Songs VALUES(6, 'Love Yourz', '3:31','Hip hop');
-    INSERT INTO  Songs VALUES(7, 'Fly Me To the Moon', '2:27','Jazz');
-    INSERT INTO  Songs VALUES(8, 'American Idiot', '2:56','Rock');
-    INSERT INTO  Songs VALUES(9, 'Yellow', '4:26','Pop');
-    
-    CREATE TABLE Album(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, num_songs TEXT, genre TEXT);
-    INSERT INTO Albums VALUES(1, 'Blonde', '17', 'Pop');
-    INSERT INTO Albums VALUES(2, 'Hot Pink', '12', 'R&B');
-    INSERT INTO Albums VALUES(3, 'Dangerous Woman', '9', 'Pop');
-    INSERT INTO Albums VALUES(4, 'Talk that Talk', '13', 'Pop');
-    INSERT INTO Albums VALUES(5, 'Graduation', '15', 'Hip Hop');
-    INSERT INTO Albums VALUES(6, '2014 Forest Hills Drive', '13', 'Hip Hop');
-    INSERT INTO Albums VALUES(7, 'It Might as Well be Swing', '12', 'Jazz');
-    INSERT INTO Albums VALUES(8, 'American Idiot', '9', 'Rock');
-    INSERT INTO Albums VALUES(9, 'Parachutes', '11', 'Pop');  
-        
-    CREATE TABLE Playlists(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, datecreated TEXT);
-    INSERT INTO Playlists VALUES(1, 'My Pop Songs', '04/18/2019');
-    INSERT INTO Playlists VALUES(2, 'Joey\'s Favorite', '02/27/2016');
-    INSERT INTO Playlists VALUES(3, 'Workout Playlist', '4/20/2020');
-    INSERT INTO Playlists VALUES(4, 'My Emo Phase', '6/29/2010');  
-    
-    CREATE TABLE playlist_song_rel(song_id INTEGER, playlist_id INTEGER);
-    INSERT INTO playlist_song_rel VALUES(2, 1);
-    INSERT INTO playlist_song_rel VALUES(3, 1);
-    INSERT INTO playlist_song_rel VALUES(4, 1);
-    
-    CREATE TABLE playlist_user_rel(user_id INTEGER, playlist_id INTEGER);
-    INSERT INTO playlist_user_rel VALUES(1, 1);
-    INSERT INTO playlist_user_rel VALUES(2, 3);
-    
-    CREATE TABLE listened_to(user_id INTEGER, song_id INTEGER);
-    INSERT INTO listened_to VALUES(1, 5);
-    INSERT INTO listened_to VALUES(2, 6);
-    INSERT INTO listened_to VALUES(3, 4);
-    
-    CREATE TABLE album_song_rel(album_id INTEGER, song_id INTEGER);
-    INSERT INTO album_song_rel VALUES(1, 1);
-    INSERT INTO album_song_rel VALUES(2, 2);
-    INSERT INTO album_song_rel VALUES(3, 3);
-    INSERT INTO album_song_rel VALUES(4, 4);
-    INSERT INTO album_song_rel VALUES(5, 5);
-    INSERT INTO album_song_rel VALUES(6, 6);
-    INSERT INTO album_song_rel VALUES(7, 7);
-    INSERT INTO album_song_rel VALUES(8, 8);
-    INSERT INTO album_song_rel VALUES(9, 9);
-    
-    CREATE TABLE album_artist_rel(album_id INTEGER, artist_id INTEGER);
-    INSERT INTO album_artist_rel VALUES(1, 1);
-    INSERT INTO album_artist_rel VALUES(2, 2);
-    INSERT INTO album_artist_rel VALUES(3, 3);
-    INSERT INTO album_artist_rel VALUES(4, 4);
-    INSERT INTO album_artist_rel VALUES(5, 5);
-    INSERT INTO album_artist_rel VALUES(6, 6);
-    INSERT INTO album_artist_rel VALUES(7, 7);
-    INSERT INTO album_artist_rel VALUES(8, 8);
-    INSERT INTO album_artist_rel VALUES(9, 9); 
-    */
     console.log("New table Users created");
-    console.log("New table Accounts created");
   } else {
     console.log('Database "Music-Streaming-Service" ready to go!');
-    db.run("PRAGMA read_uncommitted = 0");
+    //
+    db.run(`PRAGMA read_uncommitted = 0`);
+    // start indexes
+    db.run(`CREATE INDEX IF NOT EXISTS ind_one ON Playlists(name)`);
+    db.run(`CREATE INDEX IF NOT EXISTS ind_two ON Artists(name)`);
+    db.run(`CREATE INDEX IF NOT EXISTS ind_three ON Users(id)`);
+    db.run(`CREATE INDEX IF NOT EXISTS ind_four ON Songs(id)`);
+    // end indexes
   }
 });
 
@@ -131,7 +149,7 @@ app.post("/addUser", (request, response) => {
     const cleansedlast = cleanseString(request.body.last);
     const cleanseddate = cleanseString(request.body.date);
     const cleansedact = cleanseString(request.body.act);
-    db.run(`BEGIN EXCLUSIVE;`);
+    db.run(`BEGIN TRANSACTION EXCLUSIVE;`);
     db.run(
       `INSERT INTO Users (firstname, lastname, datejoined, accounttype) VALUES (?,?,?,?)`,
       cleansedfirst,
@@ -198,9 +216,9 @@ app.post("/updateUserAcc", (request, response) => {
     `UPDATE Users SET accounttype=${cleansedacc} where id='${cleansedId}'`,
     (err, rows) => {
       if (err) {
-        response.send(JSON.stringify("error"));
+        response.send(JSON.stringify("Whoops! An error occurred."));
       } else {
-        response.send(JSON.stringify("success"));
+        response.send(JSON.stringify("Success! Account updated successfully."));
       }
     }
   );
@@ -208,7 +226,7 @@ app.post("/updateUserAcc", (request, response) => {
 });
 
 app.post("/getWebsiteStats", (request, response) => {
-  db.run(`PRAGMA read_uncommitted = 0`);
+  db.run(`PRAGMA read_uncommitted = 1`);
   db.all(
     `select (select count(u.id) from Users u) as user, (select count(a.id) from Artists a) as artist, (select count(p.id) from Playlists p) as playlist, (select s.title from Songs s where s.id=(select song_id from (select song_id, count(*) as cnt from listened_to group by song_id order by count(*) desc limit 1) x)) as top_song`,
     (err, rows) => {
