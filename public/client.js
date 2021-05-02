@@ -209,7 +209,6 @@ songsForm.onsubmit = event => {
   while (tbSongSearchItem.firstChild) {
     tbSongSearchItem.removeChild(tbSongSearchItem.firstChild);
   }
-  console.log("Here is the name " + snameInput.value);
   fetch("/getSongsByUsername", {
     method: "POST",
     body: JSON.stringify({ getSongsByUsername: snameInput.value }),
@@ -226,12 +225,10 @@ songsForm.onsubmit = event => {
 //update the user's account type on submit
 updateAccForm.onsubmit = event => {
   event.preventDefault();
-  console.log("Here is the name for acc update" + updateAccInput.value);
+  console.log("Here is the id for acc update" + updateAccInput.value);
   console.log("Here is the value for the acc update" + updateAccSORP.value);
-  var fullname = updateAccInput.value.split(" ");
   const data = {
-    first: fullname[0],
-    last: fullname[1],
+    id: updateAccInput.value,
     acc: updateAccSORP.value
   };
 

@@ -179,9 +179,9 @@ app.post("/getSongsByArtist", (request, response) => {
 //search songs listened to by user
 app.post("/getSongsByUsername", (request, response) => {
   console.log("Here is the name in server" + request.body.getSongsByUsername);
-  const cleansedname = cleanseString(request.body.getSongsByUsername);
+  const cleansedId = cleanseString(request.body.getSongsByUsername);
   db.all(
-    `select s.title, s.genre from Songs s join listened_to lt on s.id=lt.song_id join Users u on lt.user_id=u.id where u.firstname='${cleansedname}'`,
+    `select s.title, s.genre from Songs s join listened_to lt on s.id=lt.song_id join Users u on lt.user_id=u.id where u.id='${cleansedId}'`,
     (err, rows) => {
       response.send(JSON.stringify(rows));
       console.log(rows);
@@ -191,12 +191,11 @@ app.post("/getSongsByUsername", (request, response) => {
 
 //update user's account type
 app.post("/updateUserAcc", (request, response) => {
-  const cleansedfirst = cleanseString(request.body.first);
-  const cleansedlast = cleanseString(request.body.last);
+  const cleansedId = cleanseString(request.body.id);
   const cleansedacc = cleanseString(request.body.acc);
   db.run(`BEGIN EXCLUSIVE;`);
   db.all(
-    `UPDATE Users SET accounttype=${cleansedacc} where firstname='${cleansedfirst}' and lastname='${cleansedlast}'`,
+    `UPDATE Users SET accounttype=${cleansedacc} where id='${cleansedId}'`,
     (err, rows) => {
       if (err) {
         response.send(JSON.stringify("error"));
